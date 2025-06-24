@@ -1,0 +1,16 @@
+export enum UserEventTypes {
+  EMAIL_VERIFIED = 'Email Verified',
+  USER_LOGGED_IN = 'User Logged In',
+  USER_LOGGED_OUT = 'User Logged Out',
+  USER_DEACTIVATED = 'User Deactivated',
+  USER_REACTIVATED = 'User Re-activated',
+  USER_OPT_OUT_OF_EMAIL = 'User Opt Out Of Email',
+  USER_OPT_IN_OF_EMAIL = 'User Opt In Of Email',
+  TOS_UPDATE_ACKNOWLEDGED = 'Terms of Service Update Acknowledged',
+  PRIVACY_POLICY_UPDATE_ACKNOWLEDGED = 'Privacy Policy Update Acknowledged',
+  EDUCATION_MATERIAL_UPDATE_ACKNOWLEDGED = 'Education Material Update Acknowledged',
+  FAQ_UPDATE_ACKNOWLEDGED = 'faq',
+  SSN_VERIFIED = 'Ssn Verified',
+  SSN_VERIFICATION_FAILED = 'Ssn Verification failed',
+  USER_UPLOAD_ID = 'User Upload Id',
+}

@@ -1,0 +1,33 @@
+{
+  "compilerOptions": {
+    "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "allowSyntheticDefaultImports": true,
+    "module": "CommonJS",
+    "moduleResolution": "Node",
+    "resolveJsonModule": true,
+    "noImplicitAny": false,
+    "outDir": "./build",
+    "preserveConstEnums": true,
+    "removeComments": true,
+    "sourceMap": false,
+    "skipLibCheck": true,
+    "strictPropertyInitialization": false,
+    "allowJs": true,
+    "target": "es2020",
+    "typeRoots": ["./node_modules/@types"],
+    "lib": ["es2020", "es2020.promise", "es2020.bigint", "es2020.string"],
+    "baseUrl": "./",
+    "paths": {
+      "@application/*": ["App/Application/*"],
+      "@domain/*": ["App/Domain/*"],
+      "@http/*": ["App/HTTP/*"],
+      "@controller/*": ["App/HTTP/Controllers/*"],
+      "@routes/*": ["App/HTTP/Routes/*"],
+      "@infrastructure/*": ["App/Infrastructure/*"]
+    }
+  },
+  "include": ["App/**/*.ts", "bin", "App/Domain/Utils/NPAPdf.js"],
+  "exclude": ["node_modules"]
+}

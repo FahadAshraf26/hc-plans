@@ -1,0 +1,68 @@
+version: 2.1
+orbs:
+  docker: circleci/docker@1.0.1
+  gcp-cli: circleci/gcp-cli@3.1
+
+jobs:
+  build-and-test:
+    executor:
+      name: docker/docker
+    steps:
+      - setup_remote_docker
+      - checkout
+      - docker/install-docker-tools
+      - run:
+          name: Setup environment file
+          command: mv .env.circleci .env
+      - run:
+          name: Build service
+          command: chmod +x ./circleci.sh && ./circleci.sh
+      - run:
+          name: Execute Tests
+          command: chmod +x ./circleci.sh && ./circleci.sh test
+      - run:
+          name: Copy Coverage
+          command: chmod +x ./circleci.sh && ./circleci.sh coverage
+      - run:
+          name: Clean up
+          command: chmod +x ./circleci.sh && ./circleci.sh clean
+      - store_artifacts:
+          path: coverage
+      - run: echo "Setup environment successfully."
+
+  build-and-push-staging:
+    executor: gcp-cli/default
+    steps:
+      - checkout
+      - setup_remote_docker
+      - gcp-cli/install
+      - run:
+          name: Authenticate with Google Cloud
+          command: |
+            echo ${GCLOUD_SERVICE_KEY_STAGING} | gcloud auth activate-service-account --key-file=-
+            gcloud --quiet config set project ${GOOGLE_PROJECT_ID_STAGING}
+            gcloud --quiet config set compute/zone ${GOOGLE_COMPUTE_ZONE_STAGING}
+      - run:
+          name: Configure Docker for Artifact Registry
+          command: gcloud auth configure-docker 
+      - run:
+          name: Build Docker image
+          command: |
+            chmod +x ./ops/docker/build.sh
+            GCP_PROJECT=${GOOGLE_PROJECT_ID_STAGING} ./ops/docker/build.sh images
+      - run:
+          name: Push to Artifact Registry
+          command: |
+            IMAGE_TAG=$(cat ~/tag-${GOOGLE_PROJECT_ID_STAGING}.txt)
+            docker push gcr.io/${GOOGLE_PROJECT_ID_STAGING}/honeycomb-api-dev:${IMAGE_TAG}
+      - run: echo "Successfully built and pushed container to Artifact Registry."
+
+workflows:
+  staging:
+    jobs:
+      - build-and-push-staging:
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^pre-release-v.*/

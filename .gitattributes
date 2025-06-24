@@ -1,0 +1,2 @@
+ops/* merge=development
+.circleci/config.yml merge=development

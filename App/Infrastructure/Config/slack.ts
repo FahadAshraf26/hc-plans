@@ -1,0 +1,48 @@
+import * as dotenv from 'dotenv';
+dotenv.config();
+
+export default {
+  SLACK_TOKEN: process.env.SLACK_TOKEN,
+  DEVELOPMENT: {
+    ID: process.env.SLACK_DEVELOPMENT_CHANNEL_ID,
+  },
+  INVESTMENT: {
+    ID: process.env.SLACK_INVESTMENT_CHANNEL_ID,
+  },
+  ERROS: {
+    ID: process.env.SLACK_ERROR_CHANNEL_ID,
+  },
+  USER_ACTIVITY: {
+    ID: process.env.SLACK_USER_ACTIVITY_CHANNEL_ID,
+  },
+  EMPLOYEE_ACTIVITY: {
+    ID: process.env.SLACK_EMPLOYEE_ACTIVITY_CHANNEL_ID,
+  },
+  NC_WEBHOOK: {
+    ID: process.env.SLACK_NC_WEBHOOK_CHANNEL_ID,
+  },
+  INVESTMENT_ERROR: {
+    ID: process.env.SLACK_INVESTMENT_ERROR_CHANNEL_ID,
+  },
+  STRIPE_WEBHOOK: {
+    ID: process.env.SLACK_STRIPE_WEBHOOK_CHANNEL_ID,
+  },
+  STRIPE_PAYMENT: {
+    ID: process.env.SLACK_STRIPE_PAYMENT_CHANNEL_ID,
+  },
+  USAEPAY_WEBHOOK: {
+    ID: process.env.SLACK_USAEPAY_WEBHOOK_CHANNEL_ID,
+  },
+  DWOLLA_ACTIVITY: {
+    ID: process.env.SLACK_DWOLLA_ACTIVITY_CHANNEL_ID,
+  },
+  VOIDED_CHECK: {
+    ID: process.env.SLACK_UPLOADEDVOIDEDCHECK_CHANNEL_ID,
+  },
+  UPLOAD_ID: {
+    ID: process.env.SLACK_UPLOADID_CHANNEL_ID,
+  },
+  PUBLISH_INVESTMENTS: {
+    ID: process.env.SLACK_PUBLISH_INVESTMENTS_CHANNEL_ID,
+  },
+};
