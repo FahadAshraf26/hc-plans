@@ -1,7 +1,36 @@
-export default (sequelize, DataTypes) => {
-  const DwollaPostBankTransactionsModel = sequelize.define(
-    'dwollaPostBankTransactions',
+import { Model, DataTypes } from "sequelize";
+
+export default (sequelize) => {
+  // Define the model class using PascalCase
+  class DwollaPostBankTransactions extends Model {
+    /**
+     * Helper method for defining associations.
+     * This method is not a part of the Sequelize lifecycle.
+     * The `models/index.js` file will call this method automatically.
+     */
+    static associate(models) {
+      // Note: All `...Model` suffixes have been removed from the model names
+      // and `DwollaPostBankTransactionsModel` is replaced with `this`.
+
+      this.belongsTo(models.Issuer, {
+        foreignKey: "issuerId",
+      });
+
+      this.belongsTo(models.DwollaPreBankTransactions, {
+        foreignKey: "dwollaPreBankTransactionId",
+      });
+
+      this.belongsTo(models.DwollaCustodyTransferHistory, {
+        foreignKey: "dwollaCustodyTransferHistoryId",
+        constraints: false,
+      });
+    }
+  }
+
+  // Initialize the model with its attributes and options
+  DwollaPostBankTransactions.init(
     {
+      // --- Attributes Definition ---
       dwollaPostBankTransactionId: {
         type: DataTypes.STRING,
         primaryKey: true,
@@ -32,25 +61,14 @@ export default (sequelize, DataTypes) => {
       },
     },
     {
+      // --- Model Options ---
+      sequelize,
+      modelName: "DwollaPostBankTransactions",
+      tableName: "dwollaPostBankTransactions",
       timestamps: true,
       paranoid: true,
-    },
+    }
   );
 
-  DwollaPostBankTransactionsModel.associate = (models) => {
-    DwollaPostBankTransactionsModel.belongsTo(models.IssuerModel, {
-      foreignKey: 'issuerId',
-    });
-
-    DwollaPostBankTransactionsModel.belongsTo(models.DwollaPreBankTransactionsModel, {
-      foreignKey: 'dwollaPreBankTransactionId',
-    });
-
-    DwollaPostBankTransactionsModel.belongsTo(models.DwollaCustodyTransferHistoryModel, {
-      foreignKey: 'dwollaCustodyTransferHistoryId',
-      constraints: false,
-    });
-  };
-
-  return DwollaPostBankTransactionsModel;
+  return DwollaPostBankTransactions;
 };

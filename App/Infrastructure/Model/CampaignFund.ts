@@ -1,7 +1,75 @@
-export default (sequelize, DataTypes) => {
-  const CampaignFundModel = sequelize.define(
-    'campaignFund',
+import { Model, DataTypes } from "sequelize";
+
+export default (sequelize) => {
+  // Define the model class using PascalCase
+  class CampaignFund extends Model {
+    /**
+     * Helper method for defining associations.
+     * This method is not a part of the Sequelize lifecycle.
+     * The `models/index.js` file will call this method automatically.
+     */
+    static associate(models) {
+      // Note: All `...Model` suffixes have been removed from the model names
+      // and `CampaignFundModel` is replaced with `this` to refer to the current class.
+
+      this.belongsTo(models.Charge, {
+        foreignKey: "chargeId",
+        as: "charge",
+      });
+
+      models.Charge.hasOne(this, {
+        foreignKey: "chargeId",
+        as: "investmentCharge",
+      });
+
+      // Note: These associations define a one-to-one relationship from another model *to* this one.
+      // For clarity, these could also be defined in their respective model files (investor.js, campaign.js).
+      models.Investor.hasOne(this, {
+        foreignKey: "investorId",
+        as: "investor",
+      });
+
+      models.Campaign.hasOne(this, {
+        foreignKey: "campaignId",
+        as: "campaign",
+      });
+
+      this.hasMany(models.HybridTransaction, {
+        foreignKey: "campaignFundId",
+        as: "campaignHybridTransactions",
+      });
+
+      // --- Preserving commented-out associations ---
+      // this.belongsTo(models.InvestorPaymentOption, {
+      //   foreignKey: "investorPaymentOptionsId",
+      //   as: "paymentOption"
+      // })
+
+      // models.CampaignFundIntermediatoryCharge.belongsTo(this, {
+      //   foreignKey: 'campaignFundId',
+      //   as: 'intermediatoryCharge',
+      // });
+
+      // this.hasOne(models.CampaignFundIntermediatoryCharge, {
+      //   foreignKey: 'campaignFundId',
+      //   as: 'intermediatoryCharge',
+      // });
+
+      // this.hasMany(models.CampaignFundFinalCharge, {
+      //   foreignKey: 'campaignFundId',
+      //   as: 'finalCharges',
+      // });
+      // models.EntityCampaignFund.hasOne(this, {
+      //     foreignKey: 'campaignFundId',
+      //     as: 'entityCampaignFund',
+      // });
+    }
+  }
+
+  // Initialize the model with its attributes and options
+  CampaignFund.init(
     {
+      // --- Attributes Definition ---
       campaignFundId: {
         type: DataTypes.STRING,
         primaryKey: true,
@@ -44,58 +112,14 @@ export default (sequelize, DataTypes) => {
       },
     },
     {
+      // --- Model Options ---
+      sequelize,
+      modelName: "CampaignFund",
+      tableName: "campaignFunds",
       timestamps: true,
       paranoid: true,
-    },
+    }
   );
 
-  CampaignFundModel.associate = (models) => {
-    CampaignFundModel.belongsTo(models.ChargeModel, {
-      foreignKey: 'chargeId',
-      as: 'charge',
-    });
-    models.ChargeModel.hasOne(CampaignFundModel, {
-      foreignKey: 'chargeId',
-      as: 'investmentCharge',
-    });
-    models.InvestorModel.hasOne(CampaignFundModel, {
-      foreignKey: 'investorId',
-      as: 'investor',
-    });
-    models.CampaignModel.hasOne(CampaignFundModel, {
-      foreignKey: 'campaignId',
-      as: 'campaign',
-    });
-
-    CampaignFundModel.hasMany(models.HybridTransactionModel, {
-      foreignKey: 'campaignFundId',
-      as: 'campaignHybridTransactions',
-    });
-
-    // CampaignFundModel.belongsTo(models.InvestorPaymentOptionModel, {
-    //   foreignKey: "investorPaymentOptionsId",
-    //   as: "paymentOption"
-    // })
-
-    // models.CampaignFundIntermediatoryChargeModel.belongsTo(CampaignFundModel, {
-    //   foreignKey: 'campaignFundId',
-    //   as: 'intermediatoryCharge',
-    // });
-
-    // CampaignFundModel.hasOne(models.CampaignFundIntermediatoryChargeModel, {
-    //   foreignKey: 'campaignFundId',
-    //   as: 'intermediatoryCharge',
-    // });
-
-    // CampaignFundModel.hasMany(models.CampaignFundFinalChargeModel, {
-    //   foreignKey: 'campaignFundId',
-    //   as: 'finalCharges',
-    // });
-    // models.EntityCampaignFundModel.hasOne(models.CampaignFundModel, {
-    //     foreignKey: 'campaignFundId',
-    //     as: 'entityCampaignFund',
-    // });
-  };
-
-  return CampaignFundModel;
+  return CampaignFund;
 };

@@ -1,7 +1,35 @@
-export default (sequelize, DataTypes) => {
-  const IdologyTimestampModel = sequelize.define(
-    'idologyTimestamp',
+import { Model, DataTypes } from "sequelize";
+
+export default (sequelize) => {
+  // Define the model class using PascalCase
+  class IdologyTimestamp extends Model {
+    /**
+     * Helper method for defining associations.
+     * This method is not a part of the Sequelize lifecycle.
+     * The `models/index.js` file will call this method automatically.
+     */
+    static associate(models) {
+      // Note: `IdologyTimestampModel` is replaced with `this`, and
+      // `UserModel` is updated to its v6 class name.
+
+      // Defines the relationship from the perspective of the other model
+      models.User.hasMany(this, {
+        foreignKey: "userId",
+        as: "idologyTimestamps",
+      });
+
+      // Defines the relationship from this model's perspective
+      this.belongsTo(models.User, {
+        foreignKey: "userId",
+        as: "user",
+      });
+    }
+  }
+
+  // Initialize the model with its attributes and options
+  IdologyTimestamp.init(
     {
+      // --- Attributes Definition ---
       idologyTimestampId: {
         type: DataTypes.STRING,
         primaryKey: true,
@@ -36,22 +64,14 @@ export default (sequelize, DataTypes) => {
       },
     },
     {
+      // --- Model Options ---
+      sequelize,
+      modelName: "IdologyTimestamp",
+      tableName: "idologyTimestamps", // Explicitly set table name
       timestamps: true,
       paranoid: true,
-    },
+    }
   );
 
-  IdologyTimestampModel.associate = (models) => {
-    models.UserModel.hasMany(IdologyTimestampModel, {
-      foreignKey: 'userId',
-      as: 'idologyTimestamps',
-    });
-
-    IdologyTimestampModel.belongsTo(models.UserModel, {
-      foreignKey: 'userId',
-      as: 'user',
-    });
-  };
-
-  return IdologyTimestampModel;
+  return IdologyTimestamp;
 };

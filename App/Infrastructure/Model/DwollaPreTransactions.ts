@@ -1,7 +1,26 @@
-export default (sequelize, DataTypes) => {
-  const DwollaPreTransactionsModel = sequelize.define(
-    'dwollaPreTransactions',
+import { Model, DataTypes } from "sequelize";
+
+export default (sequelize) => {
+  // Define the model class using PascalCase
+  class DwollaPreTransactions extends Model {
+    /**
+     * Helper method for defining associations.
+     * This method is not a part of the Sequelize lifecycle.
+     * The `models/index.js` file will call this method automatically.
+     */
+    static associate(models) {
+      // Note: `DwollaPreTransactionsModel` is replaced with `this`, and
+      // `DwollaPostTransactionsModel` is updated to its v6 class name.
+      this.hasMany(models.DwollaPostTransactions, {
+        foreignKey: "dwollaPreTransactionId",
+      });
+    }
+  }
+
+  // Initialize the model with its attributes and options
+  DwollaPreTransactions.init(
     {
+      // --- Attributes Definition ---
       dwollaPreTransactionId: {
         type: DataTypes.STRING,
         primaryKey: true,
@@ -56,16 +75,14 @@ export default (sequelize, DataTypes) => {
       },
     },
     {
+      // --- Model Options ---
+      sequelize,
+      modelName: "DwollaPreTransactions",
+      tableName: "dwollaPreTransactions",
       timestamps: true,
       paranoid: true,
-    },
+    }
   );
 
-  DwollaPreTransactionsModel.associate = (models) => {
-    DwollaPreTransactionsModel.hasMany(models.DwollaPostTransactionsModel, {
-      foreignKey: 'dwollaPreTransactionId',
-    });
-  };
-
-  return DwollaPreTransactionsModel;
+  return DwollaPreTransactions;
 };

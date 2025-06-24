@@ -1,7 +1,17 @@
-export default (sequelize, DataTypes) => {
-  const DwollaPreBankTransactionsModel = sequelize.define(
-    'dwollaPreBankTransactions',
+import { Model, DataTypes } from "sequelize";
+
+export default (sequelize) => {
+  // Define the model class using PascalCase
+  class DwollaPreBankTransactions extends Model {
+    // This model does not define any associations itself,
+    // so the static 'associate' method is not needed here.
+    // Relationships to this model are defined in other models.
+  }
+
+  // Initialize the model with its attributes and options
+  DwollaPreBankTransactions.init(
     {
+      // --- Attributes Definition ---
       dwollaPreBankTransactionId: {
         type: DataTypes.STRING,
         primaryKey: true,
@@ -35,10 +45,14 @@ export default (sequelize, DataTypes) => {
       },
     },
     {
+      // --- Model Options ---
+      sequelize,
+      modelName: "DwollaPreBankTransactions",
+      tableName: "dwollaPreBankTransactions",
       timestamps: true,
       paranoid: true,
-    },
+    }
   );
 
-  return DwollaPreBankTransactionsModel;
+  return DwollaPreBankTransactions;
 };

@@ -1,7 +1,33 @@
-export default (sequelize, DataTypes) => {
-  const EmployeeModel = sequelize.define(
-    'employee',
+import { Model, DataTypes } from "sequelize";
+
+export default (sequelize) => {
+  // Define the model class using PascalCase
+  class Employee extends Model {
+    /**
+     * Helper method for defining associations.
+     * This method is not a part of the Sequelize lifecycle.
+     * The `models/index.js` file will call this method automatically.
+     */
+    static associate(models) {
+      // Note: All `...Model` suffixes have been removed from the model names
+      // and `EmployeeModel` is replaced with `this`.
+
+      // Defines the relationship from the perspective of the other model
+      models.Issuer.hasMany(this, {
+        foreignKey: "issuerId",
+      });
+
+      // Defines the relationship from this model's perspective
+      this.belongsTo(models.Issuer, {
+        foreignKey: "issuerId",
+      });
+    }
+  }
+
+  // Initialize the model with its attributes and options
+  Employee.init(
     {
+      // --- Attributes Definition ---
       employeeId: {
         type: DataTypes.STRING,
         primaryKey: true,
@@ -45,20 +71,14 @@ export default (sequelize, DataTypes) => {
       },
     },
     {
+      // --- Model Options ---
+      sequelize,
+      modelName: "Employee",
+      tableName: "employees", // Explicitly set table name
       timestamps: true,
       paranoid: true,
-    },
+    }
   );
 
-  EmployeeModel.associate = (models) => {
-    models.IssuerModel.hasMany(EmployeeModel, {
-      foreignKey: 'issuerId',
-    });
-
-    EmployeeModel.belongsTo(models.IssuerModel, {
-      foreignKey: 'issuerId',
-    });
-  };
-
-  return EmployeeModel;
+  return Employee;
 };

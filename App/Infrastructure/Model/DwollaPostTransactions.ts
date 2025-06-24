@@ -1,7 +1,31 @@
-export default (sequelize, DataTypes) => {
-  const DwollaPostTransactionsModel = sequelize.define(
-    'dwollaPostTransactions',
+import { Model, DataTypes } from "sequelize";
+
+export default (sequelize) => {
+  // Define the model class using PascalCase
+  class DwollaPostTransactions extends Model {
+    /**
+     * Helper method for defining associations.
+     * This method is not a part of the Sequelize lifecycle.
+     * The `models/index.js` file will call this method automatically.
+     */
+    static associate(models) {
+      // Note: All `...Model` suffixes have been removed from the model names
+      // and `DwollaPostTransactionsModel` is replaced with `this`.
+
+      this.belongsTo(models.Issuer, {
+        foreignKey: "issuerId",
+      });
+
+      this.belongsTo(models.DwollaPreTransactions, {
+        foreignKey: "dwollaPreTransactionId",
+      });
+    }
+  }
+
+  // Initialize the model with its attributes and options
+  DwollaPostTransactions.init(
     {
+      // --- Attributes Definition ---
       dwollaPostTransactionId: {
         type: DataTypes.STRING,
         primaryKey: true,
@@ -35,20 +59,14 @@ export default (sequelize, DataTypes) => {
       },
     },
     {
+      // --- Model Options ---
+      sequelize,
+      modelName: "DwollaPostTransactions",
+      tableName: "dwollaPostTransactions",
       timestamps: true,
       paranoid: true,
-    },
+    }
   );
 
-  DwollaPostTransactionsModel.associate = (models) => {
-    DwollaPostTransactionsModel.belongsTo(models.IssuerModel, {
-      foreignKey: 'issuerId',
-    });
-
-    DwollaPostTransactionsModel.belongsTo(models.DwollaPreTransactionsModel, {
-      foreignKey: 'dwollaPreTransactionId',
-    });
-  };
-
-  return DwollaPostTransactionsModel;
+  return DwollaPostTransactions;
 };

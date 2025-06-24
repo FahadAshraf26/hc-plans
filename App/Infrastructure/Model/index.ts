@@ -1,62 +1,45 @@
-import * as fs from 'fs';
-import * as path from 'path';
-import sequelize from '../Database/mysqlConnection';
-import { Sequelize } from 'sequelize';
+import { Sequelize, DataTypes, Model } from "sequelize";
+import sequelize from "../Database/mysqlConnection";
+import fs from "fs";
+import path from "path";
 
-// turns base_user => BaseUser
-function toCamelCase(str) {
-  const _ = str.indexOf('_');
-  if (~_) {
-    return toCamelCase(
-      str.substring(0, _) +
-        str
-          .substring(_ + 1)
-          .substring(0, 1)
-          .toUpperCase() +
-        str.substring(_ + 2) +
-        'Model',
-    );
-  } else {
-    return str.substring(0, 1).toUpperCase() + str.substring(1) + 'Model';
-  }
+interface Db {
+  [key: string]: any;
+  sequelize: Sequelize;
+  Sequelize: typeof Sequelize;
 }
 
-let models: any = {};
-let modelsLoaded = false;
+const db: Db = {
+  sequelize: sequelize,
+  Sequelize: Sequelize,
+};
 
-const createModels = () => {
-  if (modelsLoaded) return models;
+// Load all model files
+fs.readdirSync(__dirname)
+  .filter((file) => {
+    return (
+      file.indexOf(".") !== 0 &&
+      file !== path.basename(__filename) && // Exclude the current file
+      (file.slice(-3) === ".js" || file.slice(-3) === ".ts")
+    );
+  })
+  .forEach((file) => {
+    // The model definition function is imported and executed
+    const modelDefinition = require(path.join(__dirname, file)).default;
 
-  // Get all models
-  const modelsList = fs
-    .readdirSync(path.resolve(__dirname, './'))
-    .filter(
-      (t) =>
-        (~t.indexOf('.ts') || ~t.indexOf('.js')) &&
-        !~t.indexOf('index') &&
-        !~t.indexOf('.map'),
-    )
-    .map((model) => sequelize.import(__dirname + '/' + model));
-
-  // Camel case the models
-  for (let i = 0; i < modelsList.length; i++) {
-    const modelName = toCamelCase(modelsList[i].name);
-    models[modelName] = modelsList[i];
-  }
-
-  // Create the relationships for the models;
-  Object.keys(models).forEach((modelName) => {
-    if (models[modelName].associate) {
-      models[modelName].associate(models);
-    }
+    // 2. Now, modelDefinition is the actual function, which you can execute.
+    const model = modelDefinition(sequelize, DataTypes);
+    console.log(model.name);
+    db[model.name] = model;
+    // console.log(db);
+    model.sync();
   });
 
-  models['sequelize'] = sequelize;
-  models['Sequelize'] = Sequelize;
+// Set up associations
+Object.keys(db).forEach((modelName) => {
+  if (db[modelName].associate) {
+    db[modelName].associate(db);
+  }
+});
 
-  modelsLoaded = true;
-
-  return models;
-};
-export default createModels();
-export { createModels };
+export default db;

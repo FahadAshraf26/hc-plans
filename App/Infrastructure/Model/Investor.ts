@@ -1,7 +1,67 @@
-export default (sequelize, DataTypes) => {
-  const InvestorModel = sequelize.define(
-    'investor',
+import { Model, DataTypes } from "sequelize";
+
+export default (sequelize) => {
+  // Define the model class using PascalCase
+  class Investor extends Model {
+    /**
+     * Helper method for defining associations.
+     * This method is not a part of the Sequelize lifecycle.
+     * The `models/index.js` file will call this method automatically.
+     */
+    static associate(models) {
+      // Note: All `...Model` suffixes have been removed from the model names
+      // and `InvestorModel` is replaced with `this`.
+
+      // --- Preserving commented-out associations ---
+      // models.InvestorBank.belongsTo(this, {
+      //   foreignKey: 'investorId',
+      // });
+      // this.hasMany(models.InvestorBank, {
+      //   foreignKey: 'investorId',
+      // });
+
+      models.CampaignFund.belongsTo(this, {
+        foreignKey: "investorId",
+      });
+      this.hasMany(models.CampaignFund, {
+        foreignKey: "investorId",
+      });
+
+      models.User.hasOne(this, {
+        foreignKey: "userId",
+        as: "userSender",
+      });
+
+      models.Repayment.belongsTo(this, {
+        foreignKey: "investorId",
+      });
+      this.hasMany(models.Repayment, {
+        foreignKey: "investorId",
+      });
+
+      // investorPayments
+      models.InvestorPayments.belongsTo(this, {
+        foreignKey: "investorId",
+      });
+      this.hasMany(models.InvestorPayments, {
+        foreignKey: "investorId",
+      });
+
+      // campaignNotification
+      this.hasMany(models.CampaignNotification, {
+        foreignKey: "investorId",
+      });
+
+      this.hasMany(models.FavoriteCampaign, {
+        foreignKey: "investorId",
+      });
+    }
+  }
+
+  // Initialize the model with its attributes and options
+  Investor.init(
     {
+      // --- Attributes Definition ---
       investorId: {
         type: DataTypes.STRING,
         primaryKey: true,
@@ -75,61 +135,14 @@ export default (sequelize, DataTypes) => {
       },
     },
     {
+      // --- Model Options ---
+      sequelize,
+      modelName: "Investor",
+      tableName: "investors", // Explicitly set table name
       timestamps: true,
       paranoid: true,
-    },
+    }
   );
 
-  InvestorModel.associate = (models) => {
-    // models.InvestorBankModel.belongsTo(InvestorModel, {
-    //   foreignKey: 'investorId',
-    // });
-
-    // InvestorModel.hasMany(models.InvestorBankModel, {
-    //   foreignKey: 'investorId',
-    // });
-
-    models.CampaignFundModel.belongsTo(InvestorModel, {
-      foreignKey: 'investorId',
-    });
-
-    InvestorModel.hasMany(models.CampaignFundModel, {
-      foreignKey: 'investorId',
-    });
-
-    models.UserModel.hasOne(InvestorModel, {
-      foreignKey: 'userId',
-      as: 'userSender',
-    });
-
-    models.RepaymentModel.belongsTo(InvestorModel, {
-      foreignKey: 'investorId',
-    });
-
-    InvestorModel.hasMany(models.RepaymentModel, {
-      foreignKey: 'investorId',
-    });
-
-    // investorPayments
-
-    models.InvestorPaymentsModel.belongsTo(InvestorModel, {
-      foreignKey: 'investorId',
-    });
-
-    InvestorModel.hasMany(models.InvestorPaymentsModel, {
-      foreignKey: 'investorId',
-    });
-
-    //campaginNotification
-    InvestorModel.hasMany(models.CampaignNotificationModel, {
-      foreignKey: 'investorId',
-    });
-
-    
-    InvestorModel.hasMany(models.FavoriteCampaignModel, {
-      foreignKey: 'investorId',
-    });
-  };
-
-  return InvestorModel;
+  return Investor;
 };

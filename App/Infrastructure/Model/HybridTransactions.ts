@@ -1,7 +1,26 @@
-export default (sequelize, DataTypes) => {
-  const HybridTransactionModel = sequelize.define(
-    'hybridTransaction',
+import { Model, DataTypes } from "sequelize";
+
+export default (sequelize) => {
+  // Define the model class using PascalCase
+  class HybridTransaction extends Model {
+    /**
+     * Helper method for defining associations.
+     * This method is not a part of the Sequelize lifecycle.
+     * The `models/index.js` file will call this method automatically.
+     */
+    static associate(models) {
+      // Note: `HybridTransactionModel` is replaced with `this`, and
+      // `CampaignFundModel` is updated to its v6 class name.
+      this.belongsTo(models.CampaignFund, {
+        foreignKey: "campaignFundId",
+      });
+    }
+  }
+
+  // Initialize the model with its attributes and options
+  HybridTransaction.init(
     {
+      // --- Attributes Definition ---
       hybridTransactionId: {
         type: DataTypes.STRING,
         primaryKey: true,
@@ -54,16 +73,14 @@ export default (sequelize, DataTypes) => {
       },
     },
     {
+      // --- Model Options ---
+      sequelize,
+      modelName: "HybridTransaction",
+      tableName: "hybridTransactions", // Explicitly set table name
       timestamps: true,
       paranoid: true,
-    },
+    }
   );
 
-  HybridTransactionModel.associate = (models) => {
-    HybridTransactionModel.belongsTo(models.CampaignFundModel, {
-      foreignKey: 'campaignFundId',
-    });
-  };
-
-  return HybridTransactionModel;
+  return HybridTransaction;
 };

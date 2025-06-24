@@ -1,7 +1,26 @@
-export default (sequelize, DataTypes) => {
-  const DwollaToBankTransactionsModel = sequelize.define(
-    'dwollaToBankTransactions',
+import { Model, DataTypes } from "sequelize";
+
+export default (sequelize) => {
+  // Define the model class using PascalCase
+  class DwollaToBankTransactions extends Model {
+    /**
+     * Helper method for defining associations.
+     * This method is not a part of the Sequelize lifecycle.
+     * The `models/index.js` file will call this method automatically.
+     */
+    static associate(models) {
+      // Note: `DwollaToBankTransactionsModel` is replaced with `this`, and
+      // `UserModel` is updated to its v6 class name.
+      this.belongsTo(models.User, {
+        foreignKey: "userId",
+      });
+    }
+  }
+
+  // Initialize the model with its attributes and options
+  DwollaToBankTransactions.init(
     {
+      // --- Attributes Definition ---
       dwollaToBankTransactionId: {
         type: DataTypes.STRING,
         primaryKey: true,
@@ -20,16 +39,14 @@ export default (sequelize, DataTypes) => {
       },
     },
     {
+      // --- Model Options ---
+      sequelize,
+      modelName: "DwollaToBankTransactions",
+      tableName: "dwollaToBankTransactions",
       timestamps: true,
       paranoid: true,
-    },
+    }
   );
 
-  DwollaToBankTransactionsModel.associate = (models) => {
-    DwollaToBankTransactionsModel.belongsTo(models.UserModel, {
-      foreignKey: 'userId',
-    });
-  };
-
-  return DwollaToBankTransactionsModel;
+  return DwollaToBankTransactions;
 };
